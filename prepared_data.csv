@@ -1,0 +1,221 @@
+,Gender,Education,AI_Usage,Healthcare,Healthcare_rating,Finance,Finance_rating,Hiring,Hiring_rating,Education,Education_rating,Service,Service_rating,Age
+0,Male,Bachelor,Daily,Maybe,2,No,1,No,2,Yes,5,Yes,3,28
+1,Male,Bachelor,Daily,Maybe,3,Maybe,3,Maybe,4,Yes,5,Yes,4,30
+2,Female,HSC,Weekly- A few times,Yes,4,Yes,4,Yes,5,Yes,5,Yes,4,24
+3,Female,HSC,Monthly- A few times,No,2,No,2,Maybe,3,Yes,4,Maybe,3,52
+4,Female,Bachelor,Daily,Yes,3,Yes,5,No,2,Yes,3,Yes,5,29
+5,Female,Master,Weekly- A few times,Yes,1,Yes,1,Maybe,1,Maybe,1,Yes,1,28
+6,Male,Bachelor,Daily,Yes,1,No,1,Yes,1,Yes,1,Yes,1,23
+7,Female,Bachelor,Daily,No,1,No,1,No,1,No,1,No,1,27
+8,Male,Bachelor,Weekly- A few times,Maybe,3,Yes,4,Yes,5,Yes,4,Yes,5,22
+9,Male,Bachelor,Never,Yes,3,No,2,Maybe,5,Yes,5,Yes,4,25
+10,Female,HSC,Daily,No,4,Yes,3,Maybe,4,Yes,1,Maybe,3,20
+11,Male,Master,Weekly- A few times,No,1,Yes,4,No,2,Yes,4,Yes,4,39
+12,Male,Master,Weekly- A few times,Yes,2,No,3,Yes,4,Yes,2,Yes,3,27
+13,Male,Bachelor,Monthly- A few times,Maybe,2,Maybe,2,Maybe,2,Maybe,2,Maybe,2,23
+14,Male,Bachelor,Monthly- A few times,No,1,No,1,No,1,No,1,No,1,33
+15,Male,Bachelor,Weekly- A few times,No,3,Maybe,3,Yes,3,Yes,3,Maybe,3,28
+16,Male,Master,Weekly- A few times,No,3,Maybe,3,No,3,Maybe,5,Maybe,4,27
+17,Female,Bachelor,Weekly- A few times,Maybe,4,Maybe,4,Maybe,4,Yes,2,Maybe,3,23
+18,Male,HSC,Weekly- A few times,No,2,No,1,No,1,No,5,Maybe,3,20
+19,Male,Bachelor,Daily,Maybe,3,Maybe,3,Maybe,2,Yes,4,Maybe,3,22
+20,Male,HSC,Weekly- A few times,No,3,Maybe,3,Maybe,3,Maybe,4,Yes,4,22
+21,Male,Bachelor,Daily,No,5,No,5,Yes,3,Maybe,3,Yes,3,25
+22,Male,HSC,Daily,Yes,3,Yes,3,No,3,Yes,3,Yes,2,21
+23,Male,Bachelor,Weekly- A few times,No,2,No,2,Maybe,3,Maybe,3,Maybe,3,20
+24,Female,HSC,Weekly- A few times,No,2,No,2,Yes,4,No,3,Maybe,2,20
+25,Male,HSC,Daily,Yes,1,Yes,1,Yes,1,Yes,1,Yes,1,22
+26,Male,Bachelor,Weekly- A few times,Maybe,2,No,3,Maybe,2,No,1,No,1,21
+27,Male,Bachelor,Daily,Yes,5,Yes,5,Yes,5,Yes,5,Yes,5,27
+28,Male,Bachelor,Daily,Yes,2,Maybe,2,No,2,Yes,3,Yes,2,23
+29,Male,HSC,Weekly- A few times,Maybe,3,Yes,1,Yes,2,Maybe,2,Yes,1,20
+30,Male,Bachelor,Daily,Maybe,3,Maybe,3,Yes,4,Yes,4,Yes,5,24
+31,Male,Bachelor,Daily,Yes,4,Maybe,3,No,2,Yes,4,Yes,4,25
+32,Male,Bachelor,Daily,Yes,4,Maybe,3,Maybe,3,Yes,1,Maybe,3,27
+33,Male,Bachelor,Daily,No,1,Yes,4,Maybe,3,Maybe,3,Yes,4,24
+34,Male,Bachelor,Daily,No,3,Maybe,3,Maybe,3,Maybe,3,No,3,22
+35,Male,HSC,Daily,Maybe,1,Yes,1,Maybe,2,Yes,1,Yes,1,20
+36,Female,Bachelor,Weekly- A few times,Yes,2,Yes,3,Yes,3,Maybe,3,No,3,24
+37,Male,Bachelor,Weekly- A few times,Maybe,2,Yes,4,Maybe,3,Yes,4,Yes,3,24
+38,Female,HSC,Daily,Yes,4,Yes,3,Yes,5,Yes,5,Yes,2,22
+39,Female,Bachelor,Daily,Yes,3,Yes,3,Yes,3,Yes,3,Yes,3,24
+40,Male,Bachelor,Monthly- A few times,Maybe,1,Maybe,1,Maybe,1,Maybe,1,Maybe,1,26
+41,Male,Bachelor,Weekly- A few times,No,2,No,2,No,1,Maybe,3,No,1,24
+42,Female,Bachelor,Weekly- A few times,No,3,No,3,No,2,No,3,Yes,3,22
+43,Male,Bachelor,Weekly- A few times,No,2,No,2,Maybe,3,Yes,4,Yes,4,24
+44,Male,HSC,Never,No,4,Maybe,5,Yes,3,Yes,5,Yes,3,28
+45,Male,HSC,Daily,Maybe,2,Maybe,3,Yes,4,Yes,3,Yes,4,20
+46,Male,Bachelor,Weekly- A few times,No,1,No,1,Maybe,3,Yes,4,Yes,4,27
+47,Male,Bachelor,Daily,Yes,1,Yes,1,Yes,1,Yes,1,Yes,1,25
+48,Male,Bachelor,Never,No,1,Yes,1,No,1,No,1,No,1,21
+49,Male,Bachelor,Weekly- A few times,Maybe,2,Maybe,3,Yes,3,Yes,4,Yes,5,31
+50,Male,Bachelor,Daily,Yes,3,Yes,3,Yes,3,Yes,3,Yes,3,32
+51,Male,HSC,Daily,Maybe,3,Maybe,2,No,1,Maybe,3,Maybe,3,21
+52,Male,Master,Weekly- A few times,No,3,No,2,No,1,Maybe,1,No,1,28
+53,Female,Master,Daily,No,1,Maybe,3,No,1,No,1,Maybe,3,30
+54,Male,Master,Daily,No,2,No,1,No,1,No,1,No,1,26
+55,Female,Bachelor,Weekly- A few times,No,1,Maybe,2,Yes,3,No,1,Maybe,2,25
+56,Female,Bachelor,Daily,No,1,No,1,Yes,4,Yes,5,Maybe,2,23
+57,Female,Master,Daily,No,2,Maybe,3,No,1,Yes,3,Yes,3,29
+58,Female,Master,Daily,Maybe,3,Maybe,3,Maybe,3,Yes,4,Maybe,2,26
+59,Male,Master,Weekly- A few times,No,2,Yes,4,Yes,3,Yes,4,Yes,5,27
+60,Female,Master,Daily,No,1,No,1,No,1,No,1,Maybe,2,28
+61,Female,Bachelor,Monthly- A few times,Yes,1,Yes,1,No,1,Maybe,1,Yes,1,25
+62,Male,Master,Weekly- A few times,No,2,Yes,4,No,1,Yes,4,Yes,5,27
+63,Male,Master,Never,Yes,1,Yes,4,Yes,1,Maybe,1,No,1,29
+64,Female,Master,Weekly- A few times,Yes,4,Yes,1,Yes,3,Yes,3,Yes,3,25
+65,Male,HSC,Daily,No,1,Yes,4,Yes,3,Yes,5,Yes,3,21
+66,Male,Bachelor,Daily,No,1,Yes,3,Yes,5,Yes,5,Yes,4,27
+67,Male,Bachelor,Daily,No,1,Yes,4,Yes,5,Yes,5,Yes,4,20
+68,Female,Master,Daily,No,1,No,1,Maybe,3,Yes,5,Yes,5,28
+69,Female,Bachelor,Daily,No,1,No,2,No,2,Yes,3,Yes,2,22
+70,Female,Bachelor,Daily,Maybe,3,Yes,5,Yes,5,Yes,4,Maybe,3,21
+71,Female,Bachelor,Daily,Yes,3,No,1,No,1,Yes,4,Yes,3,22
+72,Female,Master,Daily,No,1,No,1,Yes,5,Yes,5,Yes,5,29
+73,Male,HSC,Daily,No,1,Yes,4,No,1,Maybe,3,Yes,4,22
+74,Male,HSC,Daily,No,3,No,3,Maybe,5,Maybe,5,Yes,5,20
+75,Male,HSC,Daily,No,1,Maybe,3,Yes,5,Yes,5,Yes,5,21
+76,Male,Bachelor,Weekly- A few times,Maybe,3,Maybe,3,Maybe,3,Maybe,3,Maybe,3,31
+77,Male,Bachelor,Weekly- A few times,Maybe,1,Maybe,1,Maybe,3,Maybe,3,Maybe,4,22
+78,Male,Bachelor,Never,Yes,3,Maybe,4,Yes,3,No,2,Maybe,2,29
+79,Female,HSC,Never,Maybe,2,Maybe,2,Maybe,3,Yes,3,Yes,3,22
+80,Male,HSC,Never,No,2,No,2,Yes,1,Yes,3,Yes,2,21
+81,Male,HSC,Weekly- A few times,Maybe,3,Yes,3,Maybe,3,Yes,2,Yes,2,21
+82,Male,Bachelor,Daily,Maybe,3,No,1,Yes,4,Yes,4,Maybe,3,19
+83,Male,HSC,Daily,Maybe,3,Maybe,3,Maybe,3,Maybe,3,Maybe,3,21
+84,Female,Bachelor,Daily,No,3,Maybe,2,No,2,Yes,1,Maybe,1,19
+85,Male,HSC,Monthly- A few times,Maybe,3,Maybe,3,Yes,3,Yes,3,Yes,2,20
+86,Male,HSC,Daily,Yes,4,Yes,4,Yes,4,Yes,4,No,4,21
+87,Female,Bachelor,Daily,No,4,Maybe,2,No,3,Yes,1,Maybe,3,21
+88,Male,HSC,Daily,Yes,5,Yes,5,Yes,1,Yes,5,Yes,5,21
+89,Male,Bachelor,Daily,No,4,Maybe,2,No,3,Yes,1,Maybe,3,21
+90,Male,HSC,Never,Maybe,3,Maybe,3,Maybe,3,Yes,2,Maybe,4,21
+91,Male,HSC,Weekly- A few times,No,1,No,1,No,1,Maybe,2,Yes,5,21
+92,Male,HSC,Daily,Yes,3,Maybe,3,Maybe,3,Yes,5,Maybe,3,25
+93,Male,HSC,Weekly- A few times,Yes,5,Yes,3,Maybe,3,Yes,5,Maybe,3,24
+94,Male,Bachelor,Daily,Maybe,3,No,2,No,2,Yes,4,Yes,3,20
+95,Male,HSC,Weekly- A few times,No,1,Maybe,3,Yes,3,Maybe,2,Yes,2,22
+96,Male,Bachelor,Monthly- A few times,Maybe,3,Yes,4,Yes,4,Yes,4,Yes,5,21
+97,Male,Bachelor,Weekly- A few times,Maybe,3,Maybe,3,Maybe,3,Maybe,3,Maybe,3,20
+98,Female,Bachelor,Weekly- A few times,No,5,Maybe,2,Maybe,2,Yes,3,Yes,2,22
+99,Male,HSC,Weekly- A few times,No,3,Maybe,3,No,3,Maybe,3,Maybe,3,22
+100,Male,HSC,Daily,Yes,1,Yes,2,Yes,1,Yes,1,Yes,1,32
+101,Male,HSC,Daily,No,1,No,1,Yes,4,Yes,4,Yes,4,20
+102,Male,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,18
+103,Male,HSC,Daily,Maybe,1,No,1,Yes,3,No,2,Maybe,3,21
+104,Male,HSC,Daily,No,1,Maybe,2,Yes,4,Maybe,3,Maybe,3,19
+105,Male,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,21
+106,Female,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,18
+107,Male,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,21
+108,Male,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,20
+109,Female,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,19
+110,Male,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,21
+111,Male,HSC,Weekly- A few times,No,1,No,2,Yes,4,Maybe,3,Maybe,3,20
+112,Female,HSC,Daily,No,1,No,1,Yes,4,Maybe,2,Maybe,3,20
+113,Female,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,20
+114,Male,HSC,Daily,No,1,No,1,No,4,Maybe,3,Maybe,3,21
+115,Male,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,21
+116,Male,HSC,Daily,Maybe,1,Maybe,1,Yes,3,Maybe,3,Maybe,3,21
+117,Female,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,20
+118,Male,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,20
+119,Male,HSC,Daily,No,1,No,1,Yes,4,Yes,1,Maybe,3,21
+120,Male,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,21
+121,Male,HSC,Daily,Maybe,1,Maybe,1,Yes,4,Maybe,3,Maybe,3,22
+122,Male,HSC,Weekly- A few times,No,1,No,1,Maybe,3,Maybe,3,Maybe,3,20
+123,Male,Bachelor,Daily,No,1,Maybe,3,Maybe,3,Maybe,3,Maybe,3,19
+124,Male,HSC,Daily,No,2,No,3,Maybe,2,Maybe,2,Maybe,3,20
+125,Female,HSC,Daily,No,1,No,1,Yes,4,Maybe,3,Maybe,3,19
+126,Male,HSC,Daily,No,1,No,1,Maybe,2,Maybe,3,Maybe,3,21
+127,Female,Master,Daily,No,1,Yes,4,Yes,4,Maybe,3,No,1,29
+128,Male,Master,Daily,No,1,Maybe,3,Maybe,3,No,1,Yes,4,28
+129,Male,Master,Daily,No,1,Maybe,3,Maybe,3,No,1,Yes,5,30
+130,Male,HSC,Daily,Yes,3,Maybe,3,No,3,Yes,3,Yes,3,19
+131,Male,Bachelor,Daily,No,1,Yes,1,Yes,1,Yes,2,Yes,1,22
+132,Male,HSC,Daily,No,3,Maybe,3,Maybe,1,No,1,No,1,20
+133,Male,HSC,Daily,Maybe,1,Yes,1,Maybe,1,Maybe,1,Maybe,1,22
+134,Male,Bachelor,Monthly- A few times,Maybe,3,Maybe,3,Yes,4,Yes,3,Yes,3,21
+135,Male,HSC,Daily,Maybe,3,Maybe,3,Yes,4,Maybe,4,Maybe,3,21
+136,Male,HSC,Weekly- A few times,Maybe,3,Maybe,3,Yes,5,Maybe,3,No,1,21
+137,Female,Master,Daily,Maybe,3,Maybe,3,Yes,4,Maybe,3,Yes,4,28
+138,Male,HSC,Weekly- A few times,Maybe,3,Maybe,3,Yes,4,Yes,3,Yes,4,21
+139,Male,HSC,Daily,Maybe,1,Maybe,1,Yes,1,Yes,1,Yes,1,23
+140,Male,HSC,Weekly- A few times,Maybe,3,Maybe,3,Maybe,2,Yes,5,Maybe,3,21
+141,Male,HSC,Never,No,1,No,1,Yes,4,No,1,Yes,4,21
+142,Female,HSC,Daily,Maybe,3,Maybe,3,Yes,4,Maybe,3,Yes,4,20
+143,Female,HSC,Daily,Yes,1,Yes,1,Yes,1,Maybe,1,Maybe,1,18
+144,Male,Bachelor,Daily,No,2,Maybe,3,Yes,4,Maybe,3,Maybe,3,20
+145,Male,Bachelor,Daily,Maybe,3,Maybe,3,Yes,5,Maybe,3,Yes,4,25
+146,Female,HSC,Daily,Maybe,3,Maybe,3,Yes,4,Maybe,2,Yes,3,22
+147,Male,HSC,Weekly- A few times,No,2,Maybe,3,Yes,1,Maybe,4,Maybe,3,21
+148,Male,HSC,Weekly- A few times,Maybe,3,Maybe,3,Maybe,4,Maybe,4,Yes,4,22
+149,Male,Bachelor,Daily,Yes,4,Maybe,3,Maybe,3,Yes,5,Maybe,3,21
+150,Male,HSC,Weekly- A few times,No,2,Yes,2,Yes,3,Yes,3,Yes,3,21
+151,Male,Bachelor,Daily,Maybe,3,Yes,3,Yes,4,Yes,4,Yes,4,21
+152,Male,Bachelor,Daily,Maybe,3,Yes,3,Maybe,2,Yes,3,Yes,3,22
+153,Male,HSC,Daily,Maybe,4,Yes,4,Yes,4,Yes,5,Yes,4,35
+154,Male,Bachelor,Daily,No,1,Maybe,1,No,1,Yes,3,Yes,3,20
+155,Female,HSC,Daily,No,1,Maybe,2,Maybe,1,Maybe,3,Yes,2,21
+156,Female,HSC,Weekly- A few times,Yes,4,Yes,4,Yes,5,Yes,5,Yes,5,23
+157,Male,Master,Daily,No,2,No,2,Maybe,3,Yes,4,Yes,5,30
+158,Female,Master,Monthly- A few times,No,1,Yes,2,Yes,3,Maybe,3,Yes,4,28
+159,Female,SSC,Monthly- A few times,Yes,4,Yes,3,Yes,4,Yes,4,Yes,4,19
+160,Male,Master,Daily,No,3,No,2,Maybe,4,Yes,4,Yes,4,29
+161,Female,HSC,Daily,Maybe,3,Maybe,3,Yes,4,Yes,3,Yes,4,23
+162,Female,Master,Daily,No,1,No,1,No,1,Yes,3,Yes,3,26
+163,Female,Bachelor,Daily,No,1,Maybe,2,No,1,Yes,4,Yes,4,29
+164,Female,Bachelor,Daily,No,1,No,1,No,1,No,1,No,1,26
+165,Female,Bachelor,Daily,Maybe,3,No,2,Yes,4,Yes,4,Yes,4,25
+166,Male,HSC,Daily,No,1,Maybe,1,No,1,Maybe,1,Yes,4,22
+167,Female,HSC,Daily,No,3,Maybe,3,Maybe,3,Maybe,3,Maybe,4,23
+168,Male,HSC,Daily,Maybe,1,Maybe,3,Yes,1,Maybe,5,Yes,5,21
+169,Female,Master,Daily,No,1,Maybe,3,Yes,5,Maybe,3,Yes,4,28
+170,Male,HSC,Daily,Yes,3,No,3,No,5,Yes,5,Yes,3,20
+171,Male,HSC,Daily,No,1,Maybe,3,Yes,5,Maybe,3,Yes,5,21
+172,Male,Bachelor,Daily,No,1,Maybe,5,Yes,5,Maybe,3,Yes,4,20
+173,Female,HSC,Daily,No,1,Maybe,1,Yes,5,Maybe,4,Yes,1,21
+174,Male,HSC,Daily,No,1,No,3,Yes,5,Maybe,2,Yes,1,21
+175,Male,HSC,Daily,No,5,Maybe,5,Maybe,5,Yes,5,Yes,5,21
+176,Male,HSC,Daily,No,1,No,5,Yes,1,Maybe,2,Yes,4,22
+177,Male,HSC,Daily,Maybe,4,Maybe,4,Maybe,4,Maybe,4,Maybe,4,23
+178,Male,HSC,Daily,Maybe,4,Maybe,4,Maybe,4,Maybe,3,Maybe,3,21
+179,Male,HSC,Daily,Maybe,3,Maybe,3,Maybe,3,Maybe,3,Yes,4,22
+180,Male,HSC,Daily,Maybe,3,Maybe,3,Maybe,3,Maybe,3,Yes,4,23
+181,Male,Bachelor,Daily,No,1,Maybe,3,Yes,5,Yes,4,Yes,5,28
+182,Male,HSC,Daily,Yes,3,Yes,3,Yes,3,Yes,3,Yes,3,20
+183,Female,PhD,Weekly- A few times,No,2,No,2,Maybe,3,Maybe,2,Maybe,2,37
+184,Female,Master,Monthly- A few times,Maybe,1,Yes,4,Maybe,2,Maybe,4,Yes,4,33
+185,Female,PhD,Daily,No,2,No,2,Maybe,3,Maybe,3,Maybe,3,31
+186,Male,PhD,Daily,Maybe,3,No,2,Maybe,3,Yes,3,Yes,4,30
+187,Female,Master,Daily,No,1,Maybe,3,Yes,4,Maybe,3,Yes,4,32
+188,Male,HSC,Daily,No,3,Maybe,3,Maybe,3,Yes,3,Yes,3,22
+189,Male,HSC,Daily,No,2,Yes,3,Maybe,2,Maybe,3,Yes,4,20
+190,Male,HSC,Daily,No,3,Maybe,3,Yes,3,Maybe,3,Maybe,3,20
+191,Female,HSC,Daily,No,2,Yes,2,Yes,1,Yes,1,Yes,1,21
+192,Female,HSC,Daily,No,3,Maybe,4,Maybe,4,Yes,4,Yes,4,19
+193,Male,HSC,Daily,Maybe,3,Yes,3,Yes,4,Yes,3,No,3,20
+194,Male,HSC,Daily,No,5,No,5,Maybe,3,Maybe,2,Yes,2,20
+195,Male,HSC,Daily,No,1,Yes,5,Yes,3,Yes,3,Yes,3,21
+196,Female,HSC,Daily,Yes,1,No,2,Yes,1,Yes,5,Yes,5,20
+197,Male,Bachelor,Monthly- A few times,Yes,2,Yes,1,Yes,1,Yes,1,Yes,1,21
+198,Male,HSC,Weekly- A few times,Yes,2,Yes,2,Yes,2,Yes,2,Yes,5,20
+199,Female,HSC,Daily,No,2,Yes,4,No,1,Maybe,3,Yes,4,21
+200,Female,HSC,Daily,Maybe,2,Yes,4,Maybe,3,Maybe,3,Maybe,3,20
+201,Female,HSC,Daily,No,1,Maybe,2,Yes,4,Maybe,3,Maybe,3,20
+202,Male,HSC,Daily,Maybe,2,No,2,Maybe,2,Yes,2,Maybe,2,21
+203,Male,HSC,Daily,Maybe,1,Maybe,3,Yes,5,Maybe,2,Yes,3,22
+204,Male,Master,Daily,No,1,Maybe,3,Yes,4,Maybe,3,Maybe,3,31
+205,Male,HSC,Daily,Maybe,3,Maybe,3,Yes,5,Yes,5,Maybe,2,20
+206,Male,Bachelor,Weekly- A few times,Maybe,1,Maybe,3,Yes,4,Yes,3,Maybe,2,21
+207,Male,HSC,Weekly- A few times,No,5,Maybe,4,Maybe,5,Yes,4,Yes,4,21
+208,Male,Bachelor,Daily,No,1,Maybe,3,Yes,3,Yes,4,Yes,4,20
+209,Male,HSC,Monthly- A few times,No,1,No,1,Maybe,3,No,3,Yes,5,21
+210,Male,HSC,Monthly- A few times,No,1,No,1,No,1,No,1,No,2,20
+211,Male,HSC,Daily,No,3,Maybe,4,Maybe,3,Maybe,3,Maybe,3,20
+212,Male,HSC,Weekly- A few times,Maybe,3,Yes,4,Yes,4,Yes,5,Maybe,3,22
+213,Male,HSC,Monthly- A few times,Maybe,1,Maybe,3,Yes,4,Maybe,5,Yes,2,19
+214,Male,HSC,Daily,No,1,No,3,Maybe,1,No,1,No,1,20
+215,Male,HSC,Weekly- A few times,No,3,Yes,4,Yes,3,Yes,5,Yes,4,28
+216,Male,Bachelor,Weekly- A few times,No,4,Maybe,4,No,5,No,5,No,4,20
+217,Male,HSC,Daily,No,1,No,3,Maybe,2,Maybe,3,Maybe,3,22
+218,Male,Bachelor,Weekly- A few times,No,1,Maybe,3,Yes,5,Yes,4,Maybe,3,20
+219,Male,HSC,Daily,Maybe,3,Yes,4,Yes,5,Yes,5,Yes,5,26
