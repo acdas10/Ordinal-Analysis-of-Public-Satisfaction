@@ -1,4 +1,4 @@
-,Gender,Education,AI_Usage,Healthcare,Healthcare_rating,Finance,Finance_rating,Hiring,Hiring_rating,Education,Education_rating,Service,Service_rating,Age
+,Gender,Education_Level,AI_Usage,Healthcare,Healthcare_rating,Finance,Finance_rating,Hiring,Hiring_rating,Education,Education_rating,Service,Service_rating,Age
 0,Male,Bachelor,Daily,Maybe,2,No,1,No,2,Yes,5,Yes,3,28
 1,Male,Bachelor,Daily,Maybe,3,Maybe,3,Maybe,4,Yes,5,Yes,4,30
 2,Female,HSC,Weekly- A few times,Yes,4,Yes,4,Yes,5,Yes,5,Yes,4,24
