@@ -3,7 +3,7 @@ library(tidyverse)
 library(MASS)
 library(ordinal)
 library(ggplot2)
-library(sjPlot)
+#library(sjPlot)
 library(reshape2)
 library(knitr)
 
@@ -467,7 +467,7 @@ kable(risk_summary)
 
 # Table 3 - Ordinal Logistic Regression Results
 
-sjPlot::tab_model(model_h1a, model_h1b, model_h2, model_h3)
+#sjPlot::tab_model(model_h1a, model_h1b, model_h2, model_h3)
 
 
 
