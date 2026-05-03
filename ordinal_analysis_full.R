@@ -1,0 +1,754 @@
+# =============================================================================
+# Title: Public Satisfaction with AI in High-Risk and Low-Risk Decision Contexts:
+#         An Ordinal Analysis of Demographic and Contextual Effects
+# =============================================================================
+# Hypotheses:
+#   H1a: Satisfaction is lower in high-criticality contexts than low-criticality
+#   H1b: Satisfaction order: Healthcare < Banking < Education
+#   H2a: Age negatively associated with AI satisfaction
+#   H2b: Educational attainment positively associated with AI satisfaction
+#   H3a: Negative age effect is stronger in high-criticality contexts
+#   H3b: Positive education effect differs across contexts; stronger in high-criticality
+# =============================================================================
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 0. INSTALL & LOAD PACKAGES
+# ─────────────────────────────────────────────────────────────────────────────
+packages <- c(
+  "tidyverse",    # data wrangling and ggplot2
+  "MASS",         # polr() – proportional odds model
+  "ordinal",      # clm() / clmm() – flexible ordinal models
+  "brant",        # Brant test for proportional odds assumption
+  "car",          # vif(), Anova()
+  "emmeans",      # estimated marginal means and contrasts
+  "ggeffects",    # marginal effects plots
+  "patchwork",    # combining ggplots
+  "gt",           # publication-quality tables
+  "gtsummary",    # descriptive and model summary tables
+  "flextable",    # Word/HTML-ready tables (fallback)
+  "effectsize",   # effect size indices (epsilon², OR)
+  "lmtest",       # lrtest()
+  "nnet",         # multinom() for robustness check
+  "RVAideMemoire",# Spearman rank correlations
+  "psych",        # descriptive stats
+  "corrplot",     # correlation matrix plot
+  "moments",      # skewness / kurtosis
+  "reshape2"      # melt for long format
+)
+
+# Install any missing packages
+new_pkg <- packages[!packages %in% installed.packages()[,"Package"]]
+if (length(new_pkg)) install.packages(new_pkg, dependencies = TRUE)
+
+invisible(lapply(packages, library, character.only = TRUE))
+
+# Set global ggplot theme (APA-compatible)
+theme_set(
+  theme_classic(base_size = 12) +
+    theme(
+      plot.title      = element_text(face = "bold", size = 13),
+      axis.title      = element_text(face = "bold"),
+      legend.position = "bottom",
+      strip.background = element_rect(fill = "grey92", colour = "grey70")
+    )
+)
+
+set.seed(2024)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1. DATA IMPORT & PREPARATION
+# ─────────────────────────────────────────────────────────────────────────────
+df_raw <- read.csv("prepared_data.csv", stringsAsFactors = FALSE)
+
+# ── 1.1  Rename for clarity ──────────────────────────────────────────────────
+df <- df_raw %>%
+  rename(
+    id              = Unnamed..0,
+    gender          = Gender,
+    education       = Education_Level,
+    ai_usage        = AI_Usage,
+    hc_accept       = Healthcare,       # willingness to accept AI in healthcare
+    hc_rating       = Healthcare_rating,
+    fin_accept      = Finance,
+    fin_rating      = Finance_rating,
+    hire_accept     = Hiring,
+    hire_rating     = Hiring_rating,
+    edu_accept      = Education,
+    edu_rating      = Education_rating,
+    svc_accept      = Service,
+    svc_rating      = Service_rating,
+    age             = Age
+  )
+
+# ── 1.2  Factor encoding ─────────────────────────────────────────────────────
+# Education: ordered from lowest to highest qualification
+edu_levels <- c("SSC", "HSC", "Bachelor", "Master", "PhD")
+
+df <- df %>%
+  mutate(
+    # Ordinal satisfaction ratings (1–5 Likert)
+    hc_rating   = ordered(hc_rating,   levels = 1:5),
+    fin_rating  = ordered(fin_rating,  levels = 1:5),
+    hire_rating = ordered(hire_rating, levels = 1:5),
+    edu_rating  = ordered(edu_rating,  levels = 1:5),
+    svc_rating  = ordered(svc_rating,  levels = 1:5),
+
+    # Education as ordered factor (numeric equivalent for regression)
+    education_ord = ordered(education, levels = edu_levels),
+    education_num = as.numeric(education_ord),  # 1–5 for regression
+
+    # Gender dummy (reference: Female)
+    gender = factor(gender, levels = c("Female", "Male")),
+
+    # AI usage frequency (ordered)
+    ai_usage = ordered(ai_usage,
+                       levels = c("Never", "Monthly- A few times",
+                                  "Weekly- A few times", "Daily")),
+    ai_usage_num = as.numeric(ai_usage),
+
+    # Age centred (aids interpretation; reduces multicollinearity)
+    age_c = scale(age, center = TRUE, scale = FALSE)[,1]
+  )
+
+# ── 1.3  Domain classification (H1a context: criticality) ───────────────────
+# High-criticality (life/financial consequences): Healthcare, Finance
+# Low-criticality  (less consequential): Education, Customer Service
+# Hiring sits at the boundary – treated separately in domain comparisons
+
+# ── 1.4  Long-format dataset (one row per respondent × domain) ──────────────
+df_long <- df %>%
+  pivot_longer(
+    cols      = c(hc_rating, fin_rating, hire_rating, edu_rating, svc_rating),
+    names_to  = "domain",
+    values_to = "satisfaction"
+  ) %>%
+  mutate(
+    domain = recode(domain,
+      hc_rating   = "Healthcare",
+      fin_rating  = "Finance",
+      hire_rating = "Hiring",
+      edu_rating  = "Education",
+      svc_rating  = "CustomerService"
+    ),
+    domain = factor(domain,
+                    levels = c("Healthcare","Finance","Hiring",
+                               "Education","CustomerService")),
+    # criticality grouping
+    criticality = case_when(
+      domain %in% c("Healthcare", "Finance") ~ "High",
+      domain %in% c("Education", "CustomerService") ~ "Low",
+      TRUE ~ "Medium"  # Hiring
+    ),
+    criticality = factor(criticality, levels = c("Low", "Medium", "High")),
+    satisfaction_num = as.numeric(satisfaction)
+  )
+
+cat("=== Data dimensions ===\n")
+cat("Wide format:", nrow(df), "rows ×", ncol(df), "columns\n")
+cat("Long format:", nrow(df_long), "rows ×", ncol(df_long), "columns\n\n")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2. DESCRIPTIVE STATISTICS
+# ─────────────────────────────────────────────────────────────────────────────
+cat("=== SECTION 2: DESCRIPTIVE STATISTICS ===\n\n")
+
+# ── 2.1  Sample demographics ─────────────────────────────────────────────────
+cat("--- Gender distribution ---\n")
+print(table(df$gender))
+cat("\n--- Education distribution ---\n")
+print(table(df$education_ord))
+cat("\n--- AI Usage frequency ---\n")
+print(table(df$ai_usage))
+cat("\n--- Age summary ---\n")
+print(summary(df$age))
+cat("SD:", round(sd(df$age), 2), "\n\n")
+
+# ── 2.2  Satisfaction ratings per domain ─────────────────────────────────────
+domain_vars <- c("hc_rating","fin_rating","hire_rating","edu_rating","svc_rating")
+domain_labels <- c("Healthcare","Finance","Hiring","Education","CustomerService")
+
+desc_stats <- df %>%
+  summarise(across(all_of(domain_vars), list(
+    Mean   = ~ mean(as.numeric(.x), na.rm = TRUE),
+    Median = ~ median(as.numeric(.x), na.rm = TRUE),
+    SD     = ~ sd(as.numeric(.x), na.rm = TRUE),
+    Skew   = ~ skewness(as.numeric(.x), na.rm = TRUE),
+    Kurt   = ~ kurtosis(as.numeric(.x), na.rm = TRUE)
+  ), .names = "{.col}__{.fn}")) %>%
+  pivot_longer(everything(), names_to = c("Domain","Stat"), names_sep = "__") %>%
+  pivot_wider(names_from = Stat, values_from = value)
+
+desc_stats$Domain <- domain_labels
+cat("--- Domain satisfaction descriptives ---\n")
+print(desc_stats %>% mutate(across(where(is.numeric), round, 3)))
+
+# ── 2.3  Frequency tables (proportions per rating level) ─────────────────────
+cat("\n--- Satisfaction frequency distributions ---\n")
+for (i in seq_along(domain_vars)) {
+  cat("\n", domain_labels[i], ":\n")
+  tbl <- prop.table(table(df[[domain_vars[i]]]))
+  print(round(tbl * 100, 1))
+}
+
+# ── 2.4  Spearman correlation matrix among satisfaction ratings ───────────────
+rating_mat <- df %>%
+  select(all_of(domain_vars)) %>%
+  mutate(across(everything(), as.numeric))
+
+spearman_cor <- cor(rating_mat, method = "spearman", use = "complete.obs")
+colnames(spearman_cor) <- rownames(spearman_cor) <- domain_labels
+cat("\n--- Spearman correlation matrix (satisfaction ratings) ---\n")
+print(round(spearman_cor, 3))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. VISUALISATIONS
+# ─────────────────────────────────────────────────────────────────────────────
+cat("\n=== SECTION 3: VISUALISATIONS ===\n")
+
+# ── 3.1  Distribution of satisfaction by domain ──────────────────────────────
+p_dist <- df_long %>%
+  ggplot(aes(x = satisfaction, fill = criticality)) +
+  geom_bar(position = "dodge", colour = "white", linewidth = 0.3) +
+  facet_wrap(~domain, nrow = 1) +
+  scale_fill_manual(values = c(Low = "#4dab6d", Medium = "#f0a500", High = "#d94f3d"),
+                    name = "Criticality") +
+  labs(title = "Figure 1. Distribution of AI Satisfaction Ratings Across Domains",
+       x = "Satisfaction (1 = Very Dissatisfied → 5 = Very Satisfied)",
+       y = "Count") +
+  theme(axis.text.x = element_text(size = 9))
+
+print(p_dist)
+ggsave("Fig1_satisfaction_distributions.png", p_dist,
+       width = 12, height = 4, dpi = 300)
+
+# ── 3.2  Mean satisfaction by domain (with 95% CI) ───────────────────────────
+ci_data <- df_long %>%
+  group_by(domain, criticality) %>%
+  summarise(
+    mean_sat = mean(satisfaction_num, na.rm = TRUE),
+    se       = sd(satisfaction_num, na.rm = TRUE) / sqrt(n()),
+    ci_lower = mean_sat - 1.96 * se,
+    ci_upper = mean_sat + 1.96 * se,
+    .groups = "drop"
+  )
+
+p_mean <- ggplot(ci_data, aes(x = reorder(domain, mean_sat),
+                               y = mean_sat, colour = criticality)) +
+  geom_point(size = 4) +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.2, linewidth = 0.8) +
+  scale_colour_manual(values = c(Low = "#4dab6d", Medium = "#f0a500", High = "#d94f3d"),
+                      name = "Criticality") +
+  scale_y_continuous(limits = c(1, 5), breaks = 1:5) +
+  labs(title = "Figure 2. Mean AI Satisfaction Ratings by Domain (95% CI)",
+       x = "Domain", y = "Mean Satisfaction") +
+  coord_flip()
+
+print(p_mean)
+ggsave("Fig2_mean_satisfaction_CI.png", p_mean, width = 8, height = 5, dpi = 300)
+
+# ── 3.3  Satisfaction by age group and education ─────────────────────────────
+df_long <- df_long %>%
+  mutate(age_group = cut(age, breaks = c(17, 29, 39, 49, 100),
+                         labels = c("18–29","30–39","40–49","50+")))
+
+p_age <- df_long %>%
+  group_by(domain, age_group) %>%
+  summarise(mean_sat = mean(satisfaction_num, na.rm = TRUE), .groups = "drop") %>%
+  ggplot(aes(x = age_group, y = mean_sat, group = domain, colour = domain)) +
+  geom_line(linewidth = 1) + geom_point(size = 2.5) +
+  scale_y_continuous(limits = c(1, 5)) +
+  labs(title = "Figure 3. Mean Satisfaction by Age Group Across Domains",
+       x = "Age Group", y = "Mean Satisfaction", colour = "Domain")
+
+print(p_age)
+ggsave("Fig3_satisfaction_by_age.png", p_age, width = 9, height = 5, dpi = 300)
+
+p_edu <- df_long %>%
+  group_by(domain, education_ord) %>%
+  summarise(mean_sat = mean(satisfaction_num, na.rm = TRUE), .groups = "drop") %>%
+  ggplot(aes(x = education_ord, y = mean_sat, group = domain, colour = domain)) +
+  geom_line(linewidth = 1) + geom_point(size = 2.5) +
+  scale_y_continuous(limits = c(1, 5)) +
+  labs(title = "Figure 4. Mean Satisfaction by Education Level Across Domains",
+       x = "Education Level", y = "Mean Satisfaction", colour = "Domain")
+
+print(p_edu)
+ggsave("Fig4_satisfaction_by_education.png", p_edu, width = 9, height = 5, dpi = 300)
+
+# ── 3.4  Spearman correlation heatmap ────────────────────────────────────────
+png("Fig5_spearman_corr_heatmap.png", width = 700, height = 600, res = 110)
+corrplot(spearman_cor, method = "color", type = "upper",
+         addCoef.col = "black", number.cex = 0.85,
+         tl.col = "black", tl.srt = 30,
+         title = "Figure 5. Spearman Correlations Among Domain Satisfaction Ratings",
+         mar = c(0,0,2,0))
+dev.off()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. PROPORTIONAL ODDS (ORDINAL LOGISTIC) REGRESSION MODELS
+# ─────────────────────────────────────────────────────────────────────────────
+# Using MASS::polr() as primary engine; ordinal::clm() for robustness checks
+# Link: logistic (proportional odds / cumulative logit)
+# ─────────────────────────────────────────────────────────────────────────────
+cat("\n=== SECTION 4: ORDINAL REGRESSION MODELS ===\n\n")
+
+# Shared control variables: gender, ai_usage_num
+# Predictors of interest: age_c, education_num
+# Interaction models for H3a / H3b
+
+fit_polr <- function(outcome, data) {
+  polr(as.formula(paste0(outcome, " ~ age_c + education_num +
+                          gender + ai_usage_num")),
+       data = data, Hess = TRUE, method = "logistic")
+}
+
+fit_polr_interaction <- function(outcome, data) {
+  polr(as.formula(paste0(outcome, " ~ age_c * education_num +
+                          gender + ai_usage_num")),
+       data = data, Hess = TRUE, method = "logistic")
+}
+
+# ── 4.1  Domain-specific baseline models ─────────────────────────────────────
+m_hc   <- fit_polr("hc_rating",   df)
+m_fin  <- fit_polr("fin_rating",  df)
+m_hire <- fit_polr("hire_rating", df)
+m_edu  <- fit_polr("edu_rating",  df)
+m_svc  <- fit_polr("svc_rating",  df)
+
+models      <- list(m_hc, m_fin, m_hire, m_edu, m_svc)
+model_names <- c("Healthcare","Finance","Hiring","Education","CustomerService")
+
+cat("--- Baseline model summaries ---\n")
+for (i in seq_along(models)) {
+  cat("\n====", model_names[i], "====\n")
+  print(summary(models[[i]]))
+}
+
+# ── 4.2  Coefficient table with OR and 95% CI ────────────────────────────────
+extract_coef_table <- function(mod, domain_name) {
+  coefs  <- coef(summary(mod))
+  # Keep only predictor rows (not thresholds)
+  preds  <- coefs[!grepl("\\|", rownames(coefs)), , drop = FALSE]
+  ci     <- confint(mod)  # profile likelihood CIs
+  ci_pred <- ci[rownames(preds), , drop = FALSE]
+  
+  tibble(
+    Domain     = domain_name,
+    Predictor  = rownames(preds),
+    B          = preds[, "Value"],
+    SE         = preds[, "Std. Error"],
+    t_value    = preds[, "t value"],
+    p_value    = pnorm(abs(preds[, "t value"]), lower.tail = FALSE) * 2,
+    OR         = exp(preds[, "Value"]),
+    CI_lower   = exp(ci_pred[, "2.5 %"]),
+    CI_upper   = exp(ci_pred[, "97.5 %"])
+  )
+}
+
+coef_table <- bind_rows(mapply(extract_coef_table, models, model_names,
+                               SIMPLIFY = FALSE))
+
+cat("\n--- Odds Ratios with 95% CI (Proportional Odds Models) ---\n")
+print(coef_table %>% mutate(across(where(is.numeric), round, 3)), n = Inf)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. MODEL DIAGNOSTICS
+# ─────────────────────────────────────────────────────────────────────────────
+cat("\n=== SECTION 5: MODEL DIAGNOSTICS ===\n\n")
+
+# ── 5.1  Proportional Odds Assumption – Brant Test ───────────────────────────
+cat("--- Brant Test (Proportional Odds Assumption) ---\n")
+for (i in seq_along(models)) {
+  cat("\n>>>", model_names[i], "\n")
+  tryCatch(print(brant(models[[i]])), error = function(e) cat("Brant test error:", conditionMessage(e), "\n"))
+}
+
+# ── 5.2  Likelihood Ratio Tests (model significance vs. intercept-only) ───────
+cat("\n--- Likelihood Ratio Tests vs. intercept-only ---\n")
+for (i in seq_along(models)) {
+  null_mod <- polr(as.formula(paste0(
+    c("hc_rating","fin_rating","hire_rating","edu_rating","svc_rating")[i],
+    " ~ 1")), data = df, Hess = TRUE, method = "logistic")
+  lr <- lrtest(null_mod, models[[i]])
+  cat(model_names[i], ": LR chi2 =", round(lr$Chisq[2], 3),
+      "df =", lr$Df[2], "p =", round(lr$`Pr(>Chisq)`[2], 4), "\n")
+}
+
+# ── 5.3  Variance Inflation Factors ──────────────────────────────────────────
+cat("\n--- VIF (Healthcare model shown as representative) ---\n")
+# VIF via linear approximation (standard approach for ordinal)
+lm_proxy <- lm(as.numeric(hc_rating) ~ age_c + education_num +
+                  gender + ai_usage_num, data = df)
+print(vif(lm_proxy))
+
+# ── 5.4  Nagelkerke / McFadden Pseudo-R² ─────────────────────────────────────
+pseudo_r2 <- function(mod) {
+  ll_null <- mod$deviance / (-2)  # intercepts only
+  # refit null
+  resp <- as.character(mod$call$formula[[2]])
+  null <- polr(as.formula(paste0(resp, " ~ 1")), data = df,
+               Hess = TRUE, method = "logistic")
+  ll0  <- null$deviance / (-2)
+  ll1  <- -mod$deviance / 2
+  n    <- nobs(mod)
+  mcf  <- 1 - ll1 / ll0
+  nag  <- (1 - exp((mod$deviance - null$deviance) / n)) /
+            (1 - exp(-null$deviance / n))
+  c(McFadden = round(mcf, 4), Nagelkerke = round(nag, 4))
+}
+
+cat("\n--- Pseudo-R² values ---\n")
+for (i in seq_along(models)) {
+  cat(model_names[i], ": ")
+  tryCatch(print(pseudo_r2(models[[i]])), error = function(e) cat("Error\n"))
+}
+
+# ── 5.5  AIC / BIC comparison ────────────────────────────────────────────────
+cat("\n--- AIC / BIC ---\n")
+ic_table <- tibble(
+  Domain = model_names,
+  AIC    = sapply(models, AIC),
+  BIC    = sapply(models, BIC)
+)
+print(ic_table %>% mutate(across(where(is.numeric), round, 2)))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 6. HYPOTHESIS TESTING
+# ─────────────────────────────────────────────────────────────────────────────
+cat("\n=== SECTION 6: HYPOTHESIS TESTING ===\n\n")
+
+# ── H1a: High-criticality vs. low-criticality satisfaction ───────────────────
+cat("--- H1a: Satisfaction in high- vs. low-criticality contexts ---\n")
+
+# Paired Wilcoxon tests (within-person comparison; same N)
+# High-criticality: Healthcare, Finance  |  Low-criticality: Education, CustomerService
+df <- df %>%
+  mutate(
+    mean_high_crit = (as.numeric(hc_rating) + as.numeric(fin_rating)) / 2,
+    mean_low_crit  = (as.numeric(edu_rating) + as.numeric(svc_rating)) / 2
+  )
+
+w_h1a <- wilcox.test(df$mean_high_crit, df$mean_low_crit,
+                     paired = TRUE, exact = FALSE)
+cat("Wilcoxon signed-rank test (high vs. low criticality):\n")
+print(w_h1a)
+cat("Median high-criticality:", median(df$mean_high_crit), "\n")
+cat("Median low-criticality: ", median(df$mean_low_crit),  "\n")
+
+# Effect size r = Z / sqrt(N)
+z_val <- qnorm(w_h1a$p.value / 2)
+r_eff <- abs(z_val) / sqrt(nrow(df))
+cat("Effect size r =", round(r_eff, 3), "\n\n")
+
+# ── H1b: Healthcare < Finance < Education (pairwise) ─────────────────────────
+cat("--- H1b: Healthcare < Finance < Education (pairwise Wilcoxon) ---\n")
+p_hc_fin  <- wilcox.test(as.numeric(df$hc_rating),
+                          as.numeric(df$fin_rating),  paired = TRUE, exact = FALSE)
+p_fin_edu <- wilcox.test(as.numeric(df$fin_rating),
+                          as.numeric(df$edu_rating),  paired = TRUE, exact = FALSE)
+p_hc_edu  <- wilcox.test(as.numeric(df$hc_rating),
+                          as.numeric(df$edu_rating),  paired = TRUE, exact = FALSE)
+
+cat("HC vs Finance  – W =", p_hc_fin$statistic,  ", p =", round(p_hc_fin$p.value, 4), "\n")
+cat("Finance vs Edu – W =", p_fin_edu$statistic, ", p =", round(p_fin_edu$p.value, 4), "\n")
+cat("HC vs Edu      – W =", p_hc_edu$statistic,  ", p =", round(p_hc_edu$p.value, 4), "\n")
+
+# Bonferroni-adjusted p-values
+cat("Bonferroni-adjusted p (×3):\n")
+cat("HC vs Finance:", round(min(p_hc_fin$p.value * 3, 1), 4), "\n")
+cat("Finance vs Edu:", round(min(p_fin_edu$p.value * 3, 1), 4), "\n")
+cat("HC vs Edu:",     round(min(p_hc_edu$p.value * 3, 1), 4), "\n\n")
+
+# Medians
+cat("Medians — Healthcare:", median(as.numeric(df$hc_rating)),
+    " Finance:", median(as.numeric(df$fin_rating)),
+    " Education:", median(as.numeric(df$edu_rating)), "\n\n")
+
+# ── H2a: Age negatively associated with satisfaction ─────────────────────────
+cat("--- H2a: Age and satisfaction (Spearman + ordinal model coefficients) ---\n")
+for (i in seq_along(domain_vars)) {
+  r_s <- cor.test(df$age, as.numeric(df[[domain_vars[i]]]), method = "spearman",
+                  exact = FALSE)
+  cat(domain_labels[i], ": rho =", round(r_s$estimate, 3),
+      ", p =", round(r_s$p.value, 4), "\n")
+}
+
+cat("\n Age coefficients (B) from ordinal models:\n")
+for (i in seq_along(models)) {
+  b_age <- coef(models[[i]])["age_c"]
+  cat(model_names[i], ":", round(b_age, 4), "\n")
+}
+
+# ── H2b: Education positively associated with satisfaction ────────────────────
+cat("\n--- H2b: Education and satisfaction ---\n")
+for (i in seq_along(domain_vars)) {
+  r_s <- cor.test(df$education_num, as.numeric(df[[domain_vars[i]]]),
+                  method = "spearman", exact = FALSE)
+  cat(domain_labels[i], ": rho =", round(r_s$estimate, 3),
+      ", p =", round(r_s$p.value, 4), "\n")
+}
+
+cat("\n Education coefficients (B) from ordinal models:\n")
+for (i in seq_along(models)) {
+  b_edu <- coef(models[[i]])["education_num"]
+  cat(model_names[i], ":", round(b_edu, 4), "\n")
+}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. MODERATION / INTERACTION MODELS (H3a & H3b)
+# ─────────────────────────────────────────────────────────────────────────────
+cat("\n=== SECTION 7: INTERACTION MODELS (H3a, H3b) ===\n\n")
+
+# ── 7.1  Fit interaction models for each domain ───────────────────────────────
+m_hc_int   <- fit_polr_interaction("hc_rating",   df)
+m_fin_int  <- fit_polr_interaction("fin_rating",  df)
+m_hire_int <- fit_polr_interaction("hire_rating", df)
+m_edu_int  <- fit_polr_interaction("edu_rating",  df)
+m_svc_int  <- fit_polr_interaction("svc_rating",  df)
+
+int_models      <- list(m_hc_int, m_fin_int, m_hire_int, m_edu_int, m_svc_int)
+
+cat("--- Interaction model summaries ---\n")
+for (i in seq_along(int_models)) {
+  cat("\n====", model_names[i], "(with Age × Education interaction) ====\n")
+  print(summary(int_models[[i]]))
+}
+
+# ── 7.2  LR test: does interaction improve fit? ───────────────────────────────
+cat("\n--- LR test: interaction vs. additive model ---\n")
+for (i in seq_along(models)) {
+  lr_int <- lrtest(models[[i]], int_models[[i]])
+  cat(model_names[i], ": LR chi2 =", round(lr_int$Chisq[2], 3),
+      "df =", lr_int$Df[2],
+      "p =", round(lr_int$`Pr(>Chisq)`[2], 4), "\n")
+}
+
+# ── 7.3  H3a & H3b: compare age / education effects across criticality ────────
+# Compare coefficients: high-criticality (HC, Finance) vs. low (Edu, Service)
+
+cat("\n--- H3a: Age effect – High criticality vs. Low criticality ---\n")
+age_coefs <- tibble(
+  Domain      = model_names,
+  B_age       = sapply(models, function(m) coef(m)["age_c"]),
+  OR_age      = exp(sapply(models, function(m) coef(m)["age_c"])),
+  Criticality = c("High","High","Medium","Low","Low")
+)
+print(age_coefs %>% mutate(across(where(is.numeric), round, 4)))
+
+cat("\n--- H3b: Education effect – High criticality vs. Low criticality ---\n")
+edu_coefs <- tibble(
+  Domain      = model_names,
+  B_edu       = sapply(models, function(m) coef(m)["education_num"]),
+  OR_edu      = exp(sapply(models, function(m) coef(m)["education_num"])),
+  Criticality = c("High","High","Medium","Low","Low")
+)
+print(edu_coefs %>% mutate(across(where(is.numeric), round, 4)))
+
+# ── 7.4  Marginal effects plot (Age × Criticality) ───────────────────────────
+age_effects <- bind_rows(
+  ggeffect(m_hc,   terms = "age_c[all]") %>% mutate(Domain = "Healthcare"),
+  ggeffect(m_fin,  terms = "age_c[all]") %>% mutate(Domain = "Finance"),
+  ggeffect(m_edu,  terms = "age_c[all]") %>% mutate(Domain = "Education"),
+  ggeffect(m_svc,  terms = "age_c[all]") %>% mutate(Domain = "CustomerService")
+) %>%
+  mutate(Criticality = ifelse(Domain %in% c("Healthcare","Finance"),
+                              "High", "Low"))
+
+p_age_effects <- ggplot(age_effects,
+                         aes(x = x, y = predicted, colour = Domain,
+                             linetype = Criticality)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = Domain),
+              alpha = 0.08, colour = NA) +
+  geom_line(linewidth = 1) +
+  scale_linetype_manual(values = c(High = "solid", Low = "dashed")) +
+  labs(title = "Figure 6. Marginal Effect of Age on Satisfaction by Domain",
+       x = "Age (centred)", y = "Predicted Probability (cumulative latent mean)",
+       colour = "Domain", linetype = "Criticality") +
+  theme(legend.box = "vertical")
+
+print(p_age_effects)
+ggsave("Fig6_age_marginal_effects.png", p_age_effects,
+       width = 9, height = 5, dpi = 300)
+
+edu_effects <- bind_rows(
+  ggeffect(m_hc,   terms = "education_num") %>% mutate(Domain = "Healthcare"),
+  ggeffect(m_fin,  terms = "education_num") %>% mutate(Domain = "Finance"),
+  ggeffect(m_edu,  terms = "education_num") %>% mutate(Domain = "Education"),
+  ggeffect(m_svc,  terms = "education_num") %>% mutate(Domain = "CustomerService")
+) %>%
+  mutate(Criticality = ifelse(Domain %in% c("Healthcare","Finance"),
+                              "High", "Low"))
+
+p_edu_effects <- ggplot(edu_effects,
+                         aes(x = x, y = predicted, colour = Domain,
+                             linetype = Criticality)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = Domain),
+              alpha = 0.08, colour = NA) +
+  geom_line(linewidth = 1) +
+  scale_x_continuous(breaks = 1:5,
+                     labels = c("SSC","HSC","Bachelor","Master","PhD")) +
+  scale_linetype_manual(values = c(High = "solid", Low = "dashed")) +
+  labs(title = "Figure 7. Marginal Effect of Education on Satisfaction by Domain",
+       x = "Education Level", y = "Predicted Probability",
+       colour = "Domain", linetype = "Criticality") +
+  theme(axis.text.x = element_text(size = 9), legend.box = "vertical")
+
+print(p_edu_effects)
+ggsave("Fig7_education_marginal_effects.png", p_edu_effects,
+       width = 9, height = 5, dpi = 300)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 8. CUMULATIVE LINK MIXED MODEL (CLMM) – POOLED / ROBUSTNESS CHECK
+# ─────────────────────────────────────────────────────────────────────────────
+# Uses ordinal::clmm with respondent as random effect (repeated-measures design)
+cat("\n=== SECTION 8: CLMM POOLED MODEL (ordinal package) ===\n\n")
+
+clmm_data <- df_long %>%
+  mutate(
+    satisfaction = factor(satisfaction_num, ordered = TRUE),
+    respondent   = factor(id)
+  )
+
+# Additive pooled model
+m_clmm_add <- clmm(
+  satisfaction ~ age_c + education_num + gender + ai_usage_num +
+    criticality + (1 | respondent),
+  data = clmm_data, link = "logit", threshold = "flexible"
+)
+
+# Interaction: criticality × age and criticality × education
+m_clmm_int <- clmm(
+  satisfaction ~ age_c * criticality + education_num * criticality +
+    gender + ai_usage_num + (1 | respondent),
+  data = clmm_data, link = "logit", threshold = "flexible"
+)
+
+cat("--- CLMM Additive model ---\n")
+print(summary(m_clmm_add))
+
+cat("\n--- CLMM Interaction model ---\n")
+print(summary(m_clmm_int))
+
+# LR test: interaction vs. additive
+cat("\n--- LR test: CLMM interaction vs. additive ---\n")
+print(anova(m_clmm_add, m_clmm_int))
+
+# ── Estimated marginal means from CLMM ────────────────────────────────────────
+cat("\n--- EMMs: criticality levels ---\n")
+emm_crit <- emmeans(m_clmm_add, ~ criticality, mode = "linear.predictor")
+print(emm_crit)
+print(pairs(emm_crit, adjust = "bonferroni"))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 9. ROBUSTNESS CHECK – MULTINOMIAL LOGISTIC REGRESSION
+# ─────────────────────────────────────────────────────────────────────────────
+cat("\n=== SECTION 9: ROBUSTNESS CHECK (Multinomial Logistic) ===\n\n")
+# If PO assumption is violated, multinomial provides an unconstrained check
+
+fit_multinom <- function(outcome, data) {
+  multinom(as.formula(paste0(outcome, " ~ age_c + education_num +
+                              gender + ai_usage_num")),
+           data = data, trace = FALSE, MaxNWts = 2000)
+}
+
+m_mn_hc  <- fit_multinom("hc_rating",  df)
+m_mn_fin <- fit_multinom("fin_rating", df)
+
+cat("--- Multinomial: Healthcare (reference = 1) ---\n")
+print(summary(m_mn_hc))
+cat("\n--- Multinomial: Finance (reference = 1) ---\n")
+print(summary(m_mn_fin))
+
+cat("\n>>> Compare AIC: PO model vs. Multinomial model\n")
+cat("Healthcare – PO AIC:", round(AIC(m_hc),   2),
+    " | Multinomial AIC:", round(AIC(m_mn_hc), 2), "\n")
+cat("Finance    – PO AIC:", round(AIC(m_fin),  2),
+    " | Multinomial AIC:", round(AIC(m_mn_fin),2), "\n")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 10. PUBLICATION-QUALITY SUMMARY TABLES
+# ─────────────────────────────────────────────────────────────────────────────
+cat("\n=== SECTION 10: PUBLICATION TABLES ===\n\n")
+
+# ── Table 1: Descriptive statistics ──────────────────────────────────────────
+tbl1 <- desc_stats %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  rename(`Domain` = Domain)
+
+cat("Table 1: Descriptive Statistics\n")
+print(tbl1)
+
+# ── Table 2: Ordinal model coefficients (ORs, 95% CIs, p-values) ─────────────
+tbl2 <- coef_table %>%
+  filter(Predictor %in% c("age_c","education_num","genderMale","ai_usage_num")) %>%
+  mutate(
+    Predictor = recode(Predictor,
+      age_c         = "Age (centred)",
+      education_num = "Education Level",
+      genderMale    = "Gender (Male)",
+      ai_usage_num  = "AI Usage Frequency"
+    ),
+    `OR [95% CI]` = sprintf("%.3f [%.3f, %.3f]", OR, CI_lower, CI_upper),
+    p_value       = case_when(
+      p_value < .001 ~ "< .001",
+      p_value < .01  ~ sprintf("%.3f*", p_value),
+      p_value < .05  ~ sprintf("%.3f*", p_value),
+      TRUE           ~ sprintf("%.3f",  p_value)
+    )
+  ) %>%
+  select(Domain, Predictor, B, SE, `OR [95% CI]`, p_value)
+
+cat("\nTable 2: Proportional Odds Regression – Odds Ratios\n")
+print(tbl2 %>% mutate(B = round(B, 3), SE = round(SE, 3)), n = Inf)
+
+# ── Table 3: Hypothesis summary ───────────────────────────────────────────────
+hyp_table <- tibble(
+  Hypothesis = c("H1a","H1b","H2a","H2b","H3a","H3b"),
+  Prediction = c(
+    "High-criticality satisfaction < Low-criticality",
+    "HC < Banking < Education",
+    "Age negatively associated with satisfaction",
+    "Education positively associated with satisfaction",
+    "Negative age effect stronger in high-criticality",
+    "Positive education effect stronger in high-criticality"
+  ),
+  Method = c(
+    "Paired Wilcoxon; CLMM criticality term",
+    "Pairwise Wilcoxon (Bonferroni-corrected)",
+    "Spearman rho; ordinal regression B_age",
+    "Spearman rho; ordinal regression B_edu",
+    "Cross-domain comparison of B_age; CLMM interaction",
+    "Cross-domain comparison of B_edu; CLMM interaction"
+  )
+)
+cat("\nTable 3: Hypothesis Summary\n")
+print(hyp_table, n = Inf)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 11. FINAL OUTPUT SUMMARY
+# ─────────────────────────────────────────────────────────────────────────────
+cat("\n=== SECTION 11: SESSION INFO ===\n")
+sessionInfo()
+
+cat("\n\n=== ANALYSIS COMPLETE ===\n")
+cat("Output files generated:\n")
+cat("  Figures : Fig1_satisfaction_distributions.png\n")
+cat("            Fig2_mean_satisfaction_CI.png\n")
+cat("            Fig3_satisfaction_by_age.png\n")
+cat("            Fig4_satisfaction_by_education.png\n")
+cat("            Fig5_spearman_corr_heatmap.png\n")
+cat("            Fig6_age_marginal_effects.png\n")
+cat("            Fig7_education_marginal_effects.png\n")
+cat("  Script  : ordinal_analysis_full.R (this file)\n")
