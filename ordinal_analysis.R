@@ -14,6 +14,15 @@ if (length(new_pkgs)) install.packages(new_pkgs, repos = "https://cloud.r-projec
                                         quiet = TRUE)
 invisible(lapply(pkgs, library, character.only = TRUE))
 
+
+library("MASS")
+library("ggplot2")
+library("reshape2")
+library("lmtest")
+library("car")
+library("effects")
+
+
 # --- 1. Load & prepare data -------------------------------------------------------
 df <- read.csv("prepared_data.csv", stringsAsFactors = FALSE)
 df$X <- NULL   # drop row-index column if present
